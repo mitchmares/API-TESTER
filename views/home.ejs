@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Helper</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1f1c2c, #928dab);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            height: 80%;
+            width: 80%;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-container {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        #output {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            border-left: 1px solid #555;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1,
+        h2 {
+            margin-top: 0;
+            color: #e0e0e0;
+        }
+
+        label {
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background: #333;
+            color: #fff;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #aaa;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #4caf50;
+            color: #fff;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        #output-res {
+            white-space: pre-wrap;
+            word-break: break-word;
+            background: #222;
+            padding: 10px;
+            border-radius: 5px;
+            flex-grow: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h1>API Helper</h1>
+            <label for="method">HTTP Method:</label>
+            <select id="method">
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
+                <option value="PUT">PUT</option>
+                <option value="DELETE">DELETE</option>
+                <option value="OTHER">Other</option>
+            </select>
+            <input type="text" id="method-custom" placeholder="Enter Custom Method" style="display:none;"><br>
+
+            <label for="content-type">Content Type:</label>
+            <select id="content-type">
+                <option value="application/json">JSON</option>
+                <option value="application/x-www-form-urlencoded">FORM</option>
+                <option value="application/xml">XML</option>
+                <option value="text/plain">TEXT</option>
+                <option value="application/octet-stream">BINARY</option>
+                <option value="OTHER">Other</option>
+            </select>
+            <input type="text" id="content-type-custom" placeholder="Enter Custom Type" style="display:none;"><br>
+
+            <label for="url">URL:</label>
+            <input type="text" id="url" placeholder="Enter URL"><br>
+            <label for="body">Body:</label>
+            <textarea id="body" rows="5" placeholder="Enter request body..."></textarea><br>
+            <button onclick="submitRequest()">Submit</button>
+        </div>
+        <div id="output">
+            <h2>Output</h2>
+            <pre id="output-res"></pre>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("method").addEventListener("change", function () {
+            document.getElementById("method-custom").style.display = this.value === "OTHER" ? "block" : "none";
+        });
+
+        document.getElementById("content-type").addEventListener("change", function () {
+            document.getElementById("content-type-custom").style.display = this.value === "OTHER" ? "block" : "none";
+        });
+
+        function submitRequest() {
+            let method = document.getElementById("method").value;
+            let header = document.getElementById("content-type").value;
+            let url = document.getElementById("url").value;
+            let body = document.getElementById("body").value;
+
+            if (method === "OTHER") {
+                method = document.getElementById("method-custom").value;
+            }
+
+            if (header === "OTHER") {
+                header = document.getElementById("content-type-custom").value;
+            }
+
+                try {
+                    fetch(`handleRequest?method=${method}&headers=${header}&body=${body}&url=${url}`)
+                        .then(response => response.text())
+                        .then(data => {
+                            document.getElementById("output-res").innerText = data;
+                        })
+                        .catch(err => {
+                            document.getElementById("output-res").innerText = 'Error: ' + err.message;
+                        });
+                } catch (err) {
+                    document.getElementById("output-res").innerText = 'Error: ' + err.message;
+                }
+            
+        }
+
+    </script>
+</body>
+
+</html>
